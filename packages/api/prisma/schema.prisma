@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String   @unique
+  password String
+  sids     String[] @default([])
+
+  teams Team[]
+}
+
+model Team {
+  id       String @id @default(cuid())
+  name     String @unique
+  password String
+
+  quests Quest[]
+  users  User[]
+}
+
+enum QuestStatus {
+  INCOMPLETE
+  COMPLETE
+}
+
+model Quest {
+  id      String      @id @default(cuid())
+  title   String
+  content String
+  status  QuestStatus @default(INCOMPLETE)
+
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
+}
