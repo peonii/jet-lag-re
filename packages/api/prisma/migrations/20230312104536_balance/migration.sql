@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Team" ADD COLUMN     "balance" INTEGER NOT NULL DEFAULT 500;

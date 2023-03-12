@@ -25,6 +25,8 @@ model Team {
   name     String @unique
   password String
 
+  balance Int @default(500)
+
   quests Quest[]
   users  User[]
 }
