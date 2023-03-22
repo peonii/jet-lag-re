@@ -13,6 +13,7 @@ import { RootStackParamList } from './types/nav';
 
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
+import TeamScreen from './screens/TeamScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -31,7 +32,7 @@ export default function App() {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: 'http://192.168.0.51:5678/trpc',
+          url: 'http://192.168.46.94:5678/trpc',
         }),
       ]
     })
@@ -41,14 +42,18 @@ export default function App() {
     const sid = await getCredentials();
 
     if (sid) {
+      console.log(sid)
       try {
         const user = await trpcProxy.user.self.query({ sid });
 
+        console.log(user)
         if (user) {
+          console.log(user)
           setCurrentSid(sid);
           setLoggedIn(true);
         }
-      } catch (_) {
+      } catch (e) {
+        console.error(e);
         setLoggedIn(false);
       }
     }
@@ -74,7 +79,10 @@ export default function App() {
               }}>
                 {loggedIn ?
                 (
-                <Stack.Screen name="Home" component={HomeScreen} />
+                  <>
+                    <Stack.Screen name="Home" component={HomeScreen} />
+                    <Stack.Screen name="Team" component={TeamScreen} />
+                  </>
                 ) : (
                     <Stack.Screen
                       name="Login"

@@ -4,6 +4,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { trpc } from "../../utils/trpc";
 import { useSelf } from "../../hooks/useSelf";
 import { Teams } from "./Teams";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../types/nav";
 
 const ScreenView = styled.View`
     flex: 1;
@@ -24,8 +26,9 @@ const TeamsText = styled.Text`
     margin: 5% 5% 0% 5%;
 `
 
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-export const HomeView: React.FC = () => {
+export const HomeView: React.FC<Props> = ({ route, navigation }) => {
     const self = useSelf();
 
     if (!self.data) {
@@ -40,7 +43,7 @@ export const HomeView: React.FC = () => {
         <ScreenView>
             <Title>@{self.data.name}</Title>
             <TeamsText>Grupy</TeamsText>
-            <Teams />
+            <Teams navigation={navigation} />
         </ScreenView>
     )
 }

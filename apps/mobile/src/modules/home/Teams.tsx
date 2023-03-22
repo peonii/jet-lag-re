@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { trpc } from '../../utils/trpc';
 import styled from "styled-components/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../types/nav";
 
 const Loading = styled.Text`
     font-size: 12px;
@@ -32,7 +34,11 @@ const TeamBalance = styled.Text`
     color: #f2e9e4;
 `
 
-export const Teams: React.FC = () => {
+type Props = {
+    navigation: NativeStackNavigationProp<RootStackParamList, "Home", undefined>
+}
+
+export const Teams: React.FC<Props> = ({ navigation }) => {
     const { sid } = useContext(AuthContext);
     const teams = trpc.team.getAll.useQuery({ sid });
 
@@ -45,7 +51,7 @@ export const Teams: React.FC = () => {
     return (
         <TeamsView>
             {teams.data.map(team => (
-                <Team key={team.id}>
+                <Team key={team.id} onPress={() => { navigation.navigate('Team', { teamId: team.id }) }}>
                     <TeamName>{team.name}</TeamName>
                     <TeamBalance>${team.balance}</TeamBalance>
                 </Team>

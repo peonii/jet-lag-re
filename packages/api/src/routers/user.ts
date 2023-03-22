@@ -65,6 +65,8 @@ export const userRouter = t.router({
                 }
             });
 
+            console.log(user)
+
             if (!user) {
                 throw new Error('Invalid session');
             }
