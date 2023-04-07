@@ -20,15 +20,31 @@ model User {
   teams Team[]
 }
 
+enum GameStatus {
+  CHASER
+  RUNNER
+}
+
 model Team {
   id       String @id @default(cuid())
   name     String @unique
   password String
 
-  balance Int @default(500)
+  balance Int        @default(500)
+  status  GameStatus @default(CHASER)
 
   quests Quest[]
   users  User[]
+
+  game   Game   @relation(fields: [gameId], references: [id])
+  gameId String
+}
+
+model Game {
+  id    String @id @default(cuid())
+  teams Team[]
+
+  gracePeriodEnd DateTime @default(now())
 }
 
 enum QuestStatus {

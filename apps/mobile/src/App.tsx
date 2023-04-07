@@ -10,10 +10,13 @@ import { AuthContext } from './context/AuthContext';
 import { getCredentials } from './shared/getCredentials';
 import { StatusBar } from 'expo-status-bar';
 import { RootStackParamList } from './types/nav';
+import PubNub from 'pubnub';
+import { config } from '../config'
 
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import TeamScreen from './screens/TeamScreen';
+import { PubNubProvider } from 'pubnub-react';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -32,7 +35,7 @@ export default function App() {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: 'http://192.168.46.94:5678/trpc',
+          url: 'http://192.168.0.242:5678/trpc',
         }),
       ]
     })
@@ -59,6 +62,12 @@ export default function App() {
     }
   }
 
+  const pubnub = new PubNub({
+    publishKey: config.pubnubPublishKey,
+    subscribeKey: config.pubnubSubscribeKey,
+    userId: 'abcdefg'
+  });
+
   useEffect(() => {
     refetchData();
   }, [])
@@ -73,25 +82,27 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <AuthContext.Provider value={{ sid: currentSid, setSid: setCurrentSid }}>
           <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>
-            <NavigationContainer>
-              <Stack.Navigator screenOptions={{
-                headerShown: false
-              }}>
-                {loggedIn ?
-                (
-                  <>
-                    <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="Team" component={TeamScreen} />
-                  </>
-                ) : (
-                    <Stack.Screen
-                      name="Login"
-                      component={LoginScreen}
-                    />
-                )
-                }
-              </Stack.Navigator>
-            </NavigationContainer>
+            <PubNubProvider client={pubnub}>
+              <NavigationContainer>
+                <Stack.Navigator screenOptions={{
+                  headerShown: false
+                }}>
+                  {loggedIn ?
+                  (
+                    <>
+                      <Stack.Screen name="Home" component={HomeScreen} />
+                      <Stack.Screen name="Team" component={TeamScreen} />
+                    </>
+                  ) : (
+                      <Stack.Screen
+                        name="Login"
+                        component={LoginScreen}
+                      />
+                  )
+                  }
+                </Stack.Navigator>
+              </NavigationContainer>
+            </PubNubProvider>
           </LoginContext.Provider>
         </AuthContext.Provider>
       </QueryClientProvider>
